@@ -30,6 +30,7 @@ async function updatePlan(formData){
     operating_days_per_week:Number(formData.get('operating_days_per_week')||5),
     sell_price_per_nt:Number(formData.get('sell_price_per_nt')||0),
     notes:String(formData.get('notes')||''),
+    forecast_ongoing:formData.get('forecast_ongoing')==='on',
     active:formData.get('active')==='on'
   };
   const pr=await s.from('customer_plans').update(planPayload).eq('id',planId); if(pr.error)throw pr.error;
@@ -59,6 +60,7 @@ export default async function EditPlan({params}){
         <div className="field"><label>Average NT / truck</label><input name="avg_nt_per_truck" type="number" step="0.1" defaultValue={p.avg_nt_per_truck||38}/></div>
         <div className="field"><label>Operating days / week</label><input name="operating_days_per_week" type="number" step="1" defaultValue={p.operating_days_per_week||5}/></div>
         <div className="field wide"><label>Notes</label><input name="notes" defaultValue={p.notes||''}/></div>
+        <div className="field wide"><label className="check"><input name="forecast_ongoing" type="checkbox" defaultChecked={p.forecast_ongoing!==false}/> Continue weekly demand beyond plan end for reorder forecasting</label></div>
         <div className="field"><label className="check"><input name="active" type="checkbox" defaultChecked={p.active!==false}/> Plan active</label></div>
       </div>
       <div style={{marginTop:16}}><button className="btn">Save changes</button></div>

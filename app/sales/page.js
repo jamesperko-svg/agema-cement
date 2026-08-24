@@ -41,6 +41,7 @@ async function addCustomerPlan(formData){
     operating_days_per_week:Number(formData.get('operating_days_per_week')||5),
     sell_price_per_nt:Number(formData.get('sell_price_per_nt')||0),
     notes:String(formData.get('notes')||''),
+    forecast_ongoing:formData.get('forecast_ongoing')==='on',
     active:true
   };
   const pr=await s.from('customer_plans').insert(plan); if(pr.error) throw pr.error;
@@ -85,13 +86,14 @@ export default async function Sales(){
         <div className="field"><label>Average NT / truck</label><input name="avg_nt_per_truck" type="number" step="0.1" defaultValue="38" required/></div>
         <div className="field"><label>Operating days / week</label><input name="operating_days_per_week" type="number" step="1" defaultValue="5" required/></div>
         <div className="field wide"><label>Notes</label><input name="notes"/></div>
+        <div className="field wide"><label className="check"><input name="forecast_ongoing" type="checkbox" defaultChecked/> Continue weekly demand beyond plan end for reorder forecasting</label></div>
       </div>
       <div style={{marginTop:16}}><button className="btn">Save customer plan</button></div>
     </form>
 
-    <div className="section"><h2>Pipeline</h2><div className="table-wrap"><table className="table"><thead><tr><th>Customer</th><th>Status</th><th>Annual Demand</th><th>AGEMA Target</th><th>Prob.</th><th>Weighted Target</th><th>Price</th><th>Terms</th><th>Throughput</th><th>Dates</th><th></th></tr></thead><tbody>
+    <div className="section"><h2>Pipeline</h2><div className="table-wrap"><table className="table"><thead><tr><th>Customer</th><th>Status</th><th>Annual Demand</th><th>AGEMA Target</th><th>Prob.</th><th>Weighted Target</th><th>Price</th><th>Terms</th><th>Throughput</th><th>Dates</th><th>Forecast</th><th></th></tr></thead><tbody>
       {data.customerPlans.map(p=>{const c=p.customers||{};const weekly=Number(p.trucks_per_day||0)*Number(p.avg_nt_per_truck||0)*Number(p.operating_days_per_week||0);return <tr key={p.id}>
-        <td><b>{c.name}</b><div className="muted">{c.location}</div></td><td>{c.status}</td><td>{num(c.annual_demand_nt)} NT</td><td>{num(p.target_volume_nt)} NT</td><td>{Number(p.probability_pct).toFixed(0)}%</td><td>{num(Number(p.target_volume_nt||0)*Number(p.probability_pct||0)/100)} NT</td><td>{money(p.sell_price_per_nt||c.default_price_per_nt)}</td><td>{c.payment_terms_days||0} d</td><td>{num(weekly)} NT/wk</td><td>{p.start_date} → {p.end_date||'open'}</td><td className="actions"><Link className="btn tiny" href={`/sales/${p.id}`}>Edit</Link><form action={deletePlan}><input type="hidden" name="id" value={p.id}/><button className="btn secondary tiny">Delete</button></form></td>
+        <td><b>{c.name}</b><div className="muted">{c.location}</div></td><td>{c.status}</td><td>{num(c.annual_demand_nt)} NT</td><td>{num(p.target_volume_nt)} NT</td><td>{Number(p.probability_pct).toFixed(0)}%</td><td>{num(Number(p.target_volume_nt||0)*Number(p.probability_pct||0)/100)} NT</td><td>{money(p.sell_price_per_nt||c.default_price_per_nt)}</td><td>{c.payment_terms_days||0} d</td><td>{num(weekly)} NT/wk</td><td>{p.start_date} → {p.end_date||'open'}</td><td>{p.forecast_ongoing!==false?'Ongoing':'Ends with plan'}</td><td className="actions"><Link className="btn tiny" href={`/sales/${p.id}`}>Edit</Link><form action={deletePlan}><input type="hidden" name="id" value={p.id}/><button className="btn secondary tiny">Delete</button></form></td>
       </tr>})}
     </tbody></table></div></div>
   </Shell>
