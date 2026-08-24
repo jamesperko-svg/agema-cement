@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadToledo, calculateModel } from '../../../../lib/db';
+import { loadToledo, calculateModel } from '../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 
