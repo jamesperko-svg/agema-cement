@@ -5,6 +5,7 @@ export default function Shell({children}){
       <div className="brand">AGEMA</div><div className="sub">Toledo Cement Platform</div>
       <nav className="nav">
         <Link href="/dashboard">Executive Dashboard</Link>
+        <Link href="/profit">Forecast vs Actual Profit</Link>
         <Link href="/sales">Sales Pipeline</Link>
         <Link href="/inventory">Inventory Forecast</Link>
         <Link href="/costs">Cargo Economics</Link>

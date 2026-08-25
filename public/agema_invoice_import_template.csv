@@ -1,0 +1,2 @@
+external_id,customer,delivery_date,volume_nt,sell_price_per_nt,invoice_number,invoice_date,invoice_amount_usd,payment_date,status,notes
+INV-1001-L1,Available Ready Mix,2026-10-27,38,160.00,INV-1001,2026-10-31,6080.00,,Invoiced,Example row - delete before importing

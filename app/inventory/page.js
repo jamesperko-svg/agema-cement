@@ -4,7 +4,7 @@ import { db, loadSalesPipeline, calculateInventoryForecast } from '../../lib/db'
 import Shell from '../_shell';
 
 function num(v){return Number(v||0).toLocaleString(undefined,{maximumFractionDigits:0})}
-function date(v){return v?new Date(v).toLocaleDateString():'—'}
+function date(v){return v?new Date(v).toLocaleDateString():'-'}
 
 async function saveSettings(formData){
   'use server';
@@ -56,7 +56,7 @@ function CaseSummary({title,c,tone='notice'}){
 
 function ForecastTable({title,c,label}){
   return <div><h2>{title}</h2><div className="table-wrap"><table className="table"><thead><tr><th>Week</th><th>Start</th><th>{label}</th><th>Ending inventory</th><th>Customer detail</th></tr></thead><tbody>
-    {c.weeks.slice(0,60).map(w=><tr key={w.week}><td>{w.week}</td><td>{date(w.weekStart)}</td><td>{num(w.planned_nt)}</td><td>{num(w.ending_inventory_nt)}</td><td>{w.details.filter(d=>d.case_nt>0).map(d=>`${d.customer}: ${num(d.case_nt)} NT${d.ongoing?' ongoing':''}`).join(' · ')||'—'}</td></tr>)}
+    {c.weeks.slice(0,60).map(w=><tr key={w.week}><td>{w.week}</td><td>{date(w.weekStart)}</td><td>{num(w.planned_nt)}</td><td>{num(w.ending_inventory_nt)}</td><td>{w.details.filter(d=>d.case_nt>0).map(d=>`${d.customer}: ${num(d.case_nt)} NT${d.actual?' actual':d.ongoing?' forecast ongoing':' forecast'}`).join(' | ')||'-'}</td></tr>)}
   </tbody></table></div></div>
 }
 
@@ -67,10 +67,12 @@ export default async function Inventory(){
   const settings=data.marketSettings||{};
   const lt=f.leadTimeComponents;
   return <Shell>
-    <div className="top"><div><h1 className="title">Toledo Inventory & Reorder Forecast</h1><div className="muted">Three demand cases: Firm = committed/active customers, Expected = probability-adjusted pipeline, Upside = full planned throughput. Plans marked ongoing continue beyond their temporary end date for reorder forecasting.</div></div></div>
+    <div className="top"><div><h1 className="title">Toledo Inventory & Reorder Forecast</h1><div className="muted">Actual deliveries replace completed weekly forecasts. Firm = committed/active customers, Expected = probability-adjusted pipeline, and Upside = full planned throughput.</div></div></div>
 
     <div className="grid">
-      <div className="card"><div className="metric-label">Saleable cargo</div><div className="metric">{num(f.qty)} NT</div></div>
+      <div className="card"><div className="metric-label">Original saleable cargo</div><div className="metric">{num(f.qty)} NT</div></div>
+      <div className="card"><div className="metric-label">Actual delivered</div><div className="metric">{num(f.actualDeliveredNT)} NT</div></div>
+      <div className="card"><div className="metric-label">Physical inventory now</div><div className={`metric ${f.currentInventoryNT<0?'negative-text':''}`}>{num(f.currentInventoryNT)} NT</div></div>
       <CaseCards label="Firm" c={f.firm}/>
       <CaseCards label="Expected" c={f.expected}/>
       <CaseCards label="Upside" c={f.upside}/>

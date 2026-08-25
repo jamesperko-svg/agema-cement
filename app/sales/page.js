@@ -45,19 +45,20 @@ async function addCustomerPlan(formData){
     active:true
   };
   const pr=await s.from('customer_plans').insert(plan); if(pr.error) throw pr.error;
-  revalidatePath('/sales'); revalidatePath('/inventory'); revalidatePath('/dashboard');
+  revalidatePath('/sales'); revalidatePath('/inventory'); revalidatePath('/dashboard'); revalidatePath('/profit'); revalidatePath('/actuals');
 }
 
 async function deletePlan(formData){
   'use server'; requireAuth(); const s=db();
   const {error}=await s.from('customer_plans').delete().eq('id',String(formData.get('id')));
   if(error)throw error;
-  revalidatePath('/sales'); revalidatePath('/inventory'); revalidatePath('/dashboard');
+  revalidatePath('/sales'); revalidatePath('/inventory'); revalidatePath('/dashboard'); revalidatePath('/profit'); revalidatePath('/actuals');
 }
 
 export default async function Sales(){
   requireAuth(); const data=await loadSalesPipeline();
-  const annualDemand=data.customerPlans.reduce((s,p)=>s+Number(p.customers?.annual_demand_nt||0),0);
+  const uniqueCustomers=new Map(); data.customerPlans.forEach(p=>{if(p.customers?.id)uniqueCustomers.set(String(p.customers.id),p.customers)});
+  const annualDemand=Array.from(uniqueCustomers.values()).reduce((s,c)=>s+Number(c.annual_demand_nt||0),0);
   const totalTarget=data.customerPlans.reduce((s,p)=>s+Number(p.target_volume_nt||0),0);
   const weighted=data.customerPlans.reduce((s,p)=>s+Number(p.target_volume_nt||0)*Number(p.probability_pct??100)/100,0);
   return <Shell>

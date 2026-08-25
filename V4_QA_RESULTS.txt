@@ -1,0 +1,8 @@
+PASS JavaScript/JSX parse check (18 files)
+PASS Relative import resolution check (35 imports)
+PASS Profit engine forecast-only sellout test
+PASS Profit engine completed-week actual replacement test
+PASS Profit engine current-week anti-double-counting test
+PASS Inventory actual-volume and physical-inventory test
+PASS Inventory completed-week forecast replacement test
+NOTE Full npm/Next production build was not run because dependency installation timed out in this sandbox.

@@ -1,0 +1,8 @@
+app/_shell.js
+app/globals.css
+app/dashboard/page.js
+app/profit/page.js
+app/profit/[id]/page.js
+lib/profit.js
+supabase_v3_3_migration.sql
+README_V3_3.txt

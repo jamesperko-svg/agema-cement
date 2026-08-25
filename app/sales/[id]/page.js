@@ -34,7 +34,7 @@ async function updatePlan(formData){
     active:formData.get('active')==='on'
   };
   const pr=await s.from('customer_plans').update(planPayload).eq('id',planId); if(pr.error)throw pr.error;
-  revalidatePath('/sales'); revalidatePath(`/sales/${planId}`); revalidatePath('/inventory'); revalidatePath('/dashboard');
+  revalidatePath('/sales'); revalidatePath(`/sales/${planId}`); revalidatePath('/inventory'); revalidatePath('/dashboard'); revalidatePath('/profit'); revalidatePath('/actuals');
 }
 
 export default async function EditPlan({params}){
